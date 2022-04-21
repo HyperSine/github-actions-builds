@@ -41,6 +41,7 @@ jobs:
             -G "Visual Studio 17 2022" `
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
             -DCMAKE_INSTALL_PREFIX="${{ env.ARTIFACTS_FULLPATH }}" `
+            -DLIEF_EXAMPLES=OFF `
             -DLIEF_PYTHON_API=OFF `
             -DLIEF_USE_CRT_"$('${{ matrix.build_type }}'.ToUpper())"=${{ matrix.msvc_crt }}$('${{ matrix.build_type }}'.Equals('Debug') ? 'd' : '') `
             ..
