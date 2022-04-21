@@ -1,0 +1,50 @@
+name: github-actions-builds
+on: [push]
+
+jobs:
+  lief_sdk-msvc:
+    runs-on: windows-2022
+    if: "startsWith(github.event.head_commit.message, '[build lief_sdk-msvc]')"
+    env:
+      LIEF_VERSION: "0.12.1"
+    steps:
+      - name: Create artifacts directory
+        shell: cmd
+        run: |
+          pushd .
+          cd \
+          mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-debug-md
+          mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-release-md
+          mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-debug-mt
+          mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-release-mt
+          echo ARTIFACTS_ROOT=%CD%>>%GITHUB_ENV%
+          popd
+      - name: Download LIEF source code
+        shell: cmd
+        run: |
+          curl -L -O https://github.com/lief-project/LIEF/archive/refs/tags/${{ env.LIEF_VERSION }}.tar.gz
+          tar -xvf ${{ env.LIEF_VERSION }}.tar.gz
+          del ${{ env.LIEF_VERSION }}.tar.gz
+      - name: Build for msvc-x64-debug-md
+        shell: cmd
+        run: |
+          pushd .
+          cd LIEF-${{ env.LIEF_VERSION }}
+          mkdir build
+          cd build
+          cmake ^
+            -A x64 ^
+            -G "Visual Studio 17 2022" ^
+            -DCMAKE_BUILD_TYPE=Debug ^
+            -DCMAKE_INSTALL_PREFIX="${{ env.ARTIFACTS_ROOT }}\lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-debug-md" ^
+            -DLIEF_PYTHON_API=OFF ^
+            -DLIEF_USE_CRT_DEBUG=MDd ^
+            ..
+          cmake --build . --config Debug --target install
+          cd ..
+          rmdir /q /s build
+          popd
+      - name: Upload artifacts for msvc-x64-debug-md
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.ARTIFACTS_ROOT }}\lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-debug-md
