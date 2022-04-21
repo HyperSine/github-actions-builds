@@ -1,4 +1,4 @@
-name: lief_sdk
+name: boost
 on: [push]
 
 jobs:
