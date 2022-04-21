@@ -47,4 +47,5 @@ jobs:
       - name: Upload artifacts for msvc-x64-debug-md
         uses: actions/upload-artifact@v3
         with:
+          name: lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-debug-md
           path: ${{ env.ARTIFACTS_ROOT }}\lief_sdk-${{ env.LIEF_VERSION }}-msvc-x64-debug-md
