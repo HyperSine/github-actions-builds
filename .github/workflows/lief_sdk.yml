@@ -8,6 +8,7 @@ jobs:
         arch: [ 'x64' ]
         build_type: [ 'Debug', 'Release' ]
         msvc_crt: [ 'MD', 'MT' ]
+      fail-fast: false
     runs-on: windows-2022
     if: ${{ startsWith(github.event.head_commit.message, '[build lief_sdk-msvc]') }}
     env:
@@ -37,7 +38,7 @@ jobs:
           cd build
           cmake `
             -A ${{ matrix.arch }} `
-            -G "Visual Studio 17 2022" `
+            -G "Ninja" `
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
             -DCMAKE_INSTALL_PREFIX="${{ env.ARTIFACTS_FULLPATH }}" `
             -DLIEF_PYTHON_API=OFF `
