@@ -1,0 +1,210 @@
+name: lief_sdk
+on: [push]
+
+jobs:
+  boost-msvc-static:
+    runs-on: windows-2022
+    if: ${{ startsWith(github.event.head_commit.message, '[build boost-msvc-static]') }}
+    env:
+      BOOST_VERSION: '1.79.0'
+      BOOST_TOOLSET: 'msvc-14.3'
+    steps:
+      - name: Use Python 3.10.4
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10.4'
+      - name: Download boost
+        shell: pwsh
+        run: |
+          $org_boost_root_dirname = "boost_$('${{ env.BOOST_VERSION }}'.Replace('.', '_'))"
+          $new_boost_root_dirname = "boost-${{ env.BOOST_VERSION }}"
+          curl -L -O "https://boostorg.jfrog.io/artifactory/main/release/${{ env.BOOST_VERSION }}/source/$($org_boost_root_dirname).7z"
+          7z x "$($org_boost_root_dirname).7z"
+          mv $org_boost_root_dirname $new_boost_root_dirname
+          ls $new_boost_root_dirname
+          "BOOST_ROOT_DIRNAME=$($new_boost_root_dirname)" >> $env:GITHUB_ENV
+          "BOOST_ROOT_FULLPATH=$($PWD)\$($new_boost_root_dirname)" >> $env:GITHUB_ENV
+      - name: Bootstrap boost
+        shell: pwsh
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\bootstrap.bat
+          popd
+      - name: Build boost for x86-md-debug
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib32-${{ env.BOOST_TOOLSET }}-md-debug `
+            --build-type=complete `
+            address-model=32 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=shared `
+            threading=multi `
+            variant=debug `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x86-md-release
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib32-${{ env.BOOST_TOOLSET }}-md-release `
+            --build-type=complete `
+            address-model=32 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=shared `
+            threading=multi `
+            variant=release `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x86-mt-debug
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib32-${{ env.BOOST_TOOLSET }}-mt-debug `
+            --build-type=complete `
+            address-model=32 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=static `
+            threading=multi `
+            variant=debug `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x86-mt-release
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib32-${{ env.BOOST_TOOLSET }}-mt-release `
+            --build-type=complete `
+            address-model=32 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=static `
+            threading=multi `
+            variant=release `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x64-md-debug
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib64-${{ env.BOOST_TOOLSET }}-md-debug `
+            --build-type=complete `
+            address-model=64 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=shared `
+            threading=multi `
+            variant=debug `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x64-md-release
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib64-${{ env.BOOST_TOOLSET }}-md-release `
+            --build-type=complete `
+            address-model=64 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=shared `
+            threading=multi `
+            variant=release `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x64-mt-debug
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib64-${{ env.BOOST_TOOLSET }}-mt-debug `
+            --build-type=complete `
+            address-model=64 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=static `
+            threading=multi `
+            variant=debug `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Build boost for x64-mt-release
+        shell: pwsh
+        # disable boost-mpi, as official pre-built boost does
+        run: |
+          pushd .
+          cd ${{ env.BOOST_ROOT_DIRNAME }}
+          .\b2.exe -j"$env:NUMBER_OF_PROCESSORS" `
+            --without-mpi `
+            --build-dir="$PWD\bin.v2" `
+            --stage-libdir=lib64-${{ env.BOOST_TOOLSET }}-mt-release `
+            --build-type=complete `
+            address-model=64 `
+            architecture=x86 `
+            toolset=${{ env.BOOST_TOOLSET }} `
+            link=static `
+            runtime-link=static `
+            threading=multi `
+            variant=release `
+            stage
+          rm -Recurse -Force .\bin.v2
+          popd
+      - name: Pack artifacts
+        shell: pwsh
+        run: |
+          tar -czvf ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz ${{ env.BOOST_ROOT_FULLPATH }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz
+          path: ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz
