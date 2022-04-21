@@ -9,7 +9,7 @@ jobs:
         build_type: [ 'Debug', 'Release' ]
         msvc_crt: [ 'MD', 'MT' ]
     runs-on: windows-2022
-    if: ${{ startsWith(github.event.head_commit.message, '[build lief_sdk-msvc]') }
+    if: ${{ startsWith(github.event.head_commit.message, '[build lief_sdk-msvc]') }}
     env:
       LIEF_VERSION: "0.12.1"
     steps:
