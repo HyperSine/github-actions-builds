@@ -202,7 +202,7 @@ jobs:
       - name: Pack artifacts
         shell: pwsh
         run: |
-          tar -czvf ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz ${{ env.BOOST_ROOT_FULLPATH }}
+          tar -czvf ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz ${{ env.BOOST_ROOT_DIRNAME }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
