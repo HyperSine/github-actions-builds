@@ -1,0 +1,70 @@
+name: llvm_project
+on: [push]
+
+jobs:
+  llvm_clang_lld_polly-14_0_1-x86_64-msvc-release:
+    runs-on: windows-2022
+    if: "startsWith(github.event.head_commit.message, '[build llvm_project]')"
+    env:
+      LLVM_VERSION: '14.0.1'
+    steps:
+      - name: Use Python 3.10.4
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10.4'
+      - name: Create artifacts directory
+        shell: cmd
+        run: |
+          pushd .
+          cd \
+          mkdir llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
+          cd llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
+          echo LLVM_ARTIFACTS=%CD%>>%GITHUB_ENV%
+          popd
+      - name: Download z3-solver
+        shell: cmd
+        run: |
+          curl -L -O https://github.com/Z3Prover/z3/releases/download/z3-4.8.15/z3-4.8.15-x64-win.zip
+          7z x z3-4.8.15-x64-win.zip
+          echo Z3_ROOT=%CD%\z3-4.8.15-x64-win>>%GITHUB_ENV%
+      - name: Download llvm-project
+        shell: cmd
+        run: |
+          curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz
+          7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz -so | 7z x -aoa -si -ttar
+      - name: Build llvm+clang+lld+polly
+        shell: cmd
+        # we have to use clang-cl beacause the component `libcxx` cannot be compiled with msvc-cl
+        # LLVM_ENABLE_LIBXML2 is set to OFF, reason: https://bugzilla.mozilla.org/show_bug.cgi?id=1537669
+        run: |
+          pushd .
+          set PATH=%PATH%;${{ env.Z3_ROOT }}\bin
+          cd llvm-project-${{ env.LLVM_VERSION }}.src
+          mkdir build
+          cd build
+          echo "LLVM_ARTIFACTS=${{ env.LLVM_ARTIFACTS }}"
+          cmake -G "Visual Studio 17 2022" ^
+            -A x64 ^
+            -T ClangCL ^
+            -Thost=x64 ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_INSTALL_PREFIX="${{ env.LLVM_ARTIFACTS }}" ^
+            -DCMAKE_PREFIX_PATH="${{ env.LLVM_ARTIFACTS }}" ^
+            -DLLVM_ENABLE_PROJECTS=clang;lld;polly ^
+            -DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx ^
+            -DLLVM_ENABLE_LIBXML2=OFF ^
+            -DLLVM_ENABLE_Z3_SOLVER=ON ^
+            -DLLVM_Z3_INSTALL_DIR="${{ env.Z3_ROOT }}" ^
+            ..\llvm
+          cmake --build . --config Release --target install
+          popd .
+      - name: Pack artifacts
+        shell: cmd
+        # pack artifacts to preserve symbol-links
+        run: |
+          tar -czvf llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release.tar.gz ${{ env.LLVM_ARTIFACTS }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release.tar.gz
+          path: llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release.tar.gz
