@@ -45,8 +45,7 @@ jobs:
           echo "LLVM_ARTIFACTS=${{ env.LLVM_ARTIFACTS }}"
           cmake -G "Visual Studio 17 2022" ^
             -A x64 ^
-            -T ClangCL ^
-            -Thost=x64 ^
+            -T ClangCL,host=x64 ^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX="${{ env.LLVM_ARTIFACTS }}" ^
             -DCMAKE_PREFIX_PATH="${{ env.LLVM_ARTIFACTS }}" ^
