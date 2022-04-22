@@ -2,7 +2,7 @@ name: boost-msvc-static
 on: workflow_dispatch
 
 jobs:
-  boost-1.79.0-msvc-14.3-static:
+  boost-msvc-static:
     runs-on: windows-2022
     env:
       BOOST_VERSION: '1.79.0'

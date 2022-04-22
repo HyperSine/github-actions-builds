@@ -2,7 +2,7 @@ name: lief_sdk-msvc-static
 on: workflow_dispatch
 
 jobs:
-  lief_sdk-0.12.1-msvc-static:
+  lief_sdk-msvc-static:
     strategy:
       matrix:
         arch: [ 'x64' ]
