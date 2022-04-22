@@ -1,8 +1,5 @@
 name: llvm_project
-on:
-  push:
-    paths:
-      - '.github/workflows/llvm_project.yml'
+on: workflow_dispatch
 
 jobs:
   llvm_clang_lld_polly-14_0_1-x86_64-msvc-release:
