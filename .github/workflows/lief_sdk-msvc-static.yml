@@ -1,8 +1,8 @@
-name: lief_sdk
+name: lief_sdk-msvc-static
 on: workflow_dispatch
 
 jobs:
-  lief_sdk-msvc:
+  lief_sdk-0.12.1-msvc-static:
     strategy:
       matrix:
         arch: [ 'x64' ]
@@ -10,9 +10,8 @@ jobs:
         msvc_crt: [ 'MD', 'MT' ]
       fail-fast: false
     runs-on: windows-2022
-    if: ${{ startsWith(github.event.head_commit.message, '[build lief_sdk-msvc]') }}
     env:
-      LIEF_VERSION: "0.12.1"
+      LIEF_VERSION: '0.12.1'
     steps:
       - name: Create artifacts directory
         shell: pwsh

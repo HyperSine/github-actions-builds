@@ -1,10 +1,9 @@
-name: boost
+name: boost-msvc-static
 on: workflow_dispatch
 
 jobs:
-  boost-msvc-static:
+  boost-1.79.0-msvc-14.3-static:
     runs-on: windows-2022
-    if: ${{ startsWith(github.event.head_commit.message, '[build boost-msvc-static]') }}
     env:
       BOOST_VERSION: '1.79.0'
       BOOST_TOOLSET: 'msvc-14.3'
