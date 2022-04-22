@@ -204,10 +204,11 @@ jobs:
           popd
       - name: Pack artifacts
         shell: pwsh
+        # use tar pack artifacts in order to preserve potential symbol-links
         run: |
-          tar -czvf ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz ${{ env.BOOST_ROOT_DIRNAME }}
+          tar -czvf boost-${{ env.BOOST_VERSION }}-${{ env.BOOST_TOOLSET }}-static.tar.gz ${{ env.BOOST_ROOT_DIRNAME }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz
-          path: ${{ env.BOOST_ROOT_DIRNAME }}.tar.gz
+          name: boost-${{ env.BOOST_VERSION }}-${{ env.BOOST_TOOLSET }}-static.tar.gz
+          path: boost-${{ env.BOOST_VERSION }}-${{ env.BOOST_TOOLSET }}-static.tar.gz
