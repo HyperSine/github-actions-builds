@@ -1,5 +1,8 @@
 name: boost
-on: [push]
+on:
+  push:
+    paths:
+      - '.github/workflows/boost.yml'
 
 jobs:
   boost-msvc-static:

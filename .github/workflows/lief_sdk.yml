@@ -1,5 +1,8 @@
 name: lief_sdk
-on: [push]
+on:
+  push:
+    paths:
+      - '.github/workflows/lief_sdk.yml'
 
 jobs:
   lief_sdk-msvc:
