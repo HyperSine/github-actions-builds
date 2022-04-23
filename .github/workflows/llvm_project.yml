@@ -33,13 +33,22 @@ jobs:
         shell: pwsh
         run: |
           curl -L -O 'https://github.com/Z3Prover/z3/releases/download/z3-${{ env.Z3_VERSION }}/z3-${{ env.Z3_VERSION }}-x64-win.zip'
+          
           7z x z3-${{ env.Z3_VERSION }}-x64-win.zip
+          rm z3-${{ env.Z3_VERSION }}-x64-win.zip
+          
           "Z3_ARTIFACTS_ROOT=${PWD}\z3-${{ env.Z3_VERSION }}-x64-win" >> $env:GITHUB_ENV
       - name: Download llvm-project
         shell: pwsh
         run: |
           curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz
-          7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz -so | 7z x -aoa -si -ttar
+
+          7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz;
+          rm llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz;
+
+          7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar
+          rm llvm-project-${{ env.LLVM_VERSION }}.src.tar;
+
           ls
       - name: Build llvm+clang+lld+polly
         shell: pwsh
