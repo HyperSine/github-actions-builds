@@ -61,7 +61,7 @@ jobs:
           cmake -G "Visual Studio 17 2022" `
             -A x64 `
             -Thost=x64 `
-            -DCMAKE_BUILD_TYPE=Release `
+            '-DCMAKE_BUILD_TYPE=Release' `
             "-DCMAKE_INSTALL_PREFIX=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             "-DCMAKE_PREFIX_PATH=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             '-DLLVM_ENABLE_PROJECTS=clang;lld;polly' `
@@ -71,7 +71,7 @@ jobs:
             "-DLLVM_Z3_INSTALL_DIR=${{ env.Z3_ARTIFACTS_ROOT }}".Replace('\', '/') `
             ..\llvm
           cmake --build . --config Release --target install
-          popd .
+          popd
       - name: Copy libz3.dll to artifacts directory
         shell: pwsh
         run: |
