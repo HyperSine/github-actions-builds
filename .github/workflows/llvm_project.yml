@@ -4,66 +4,82 @@ on: workflow_dispatch
 jobs:
   llvm_clang_lld_polly-14_0_1-x86_64-msvc-release:
     runs-on: windows-2022
-    if: "startsWith(github.event.head_commit.message, '[build llvm_project]')"
     env:
       LLVM_VERSION: '14.0.1'
+      PYTHON_VERSION: '3.10.4'
+      Z3_VERSION: '4.8.15'
     steps:
-      - name: Use Python 3.10.4
+      - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10.4'
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Create artifacts directory
-        shell: cmd
+        shell: pwsh
         run: |
           pushd .
           cd \
-          mkdir llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
-          cd llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
-          echo LLVM_ARTIFACTS=%CD%>>%GITHUB_ENV%
+          $llvm_artifacts_root = mkdir llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
+          "LLVM_ARTIFACTS_ROOT=${llvm_artifacts_root}" >> $env:GITHUB_ENV
           popd
-      - name: Download z3-solver
-        shell: cmd
+      - name: Install zlib from vcpkg
+        shell: pwsh
         run: |
-          curl -L -O https://github.com/Z3Prover/z3/releases/download/z3-4.8.15/z3-4.8.15-x64-win.zip
-          7z x z3-4.8.15-x64-win.zip
-          echo Z3_ROOT=%CD%\z3-4.8.15-x64-win>>%GITHUB_ENV%
+          vcpkg install zlib:x64-windows-static-md
+      - name: Install libxml2 from vcpkg
+        shell: pwsh
+        run: |
+          vcpkg install libxml2:x64-windows-static-md
+      - name: Download z3-solver
+        shell: pwsh
+        run: |
+          curl -L -O 'https://github.com/Z3Prover/z3/releases/download/z3-${{ env.Z3_VERSION }}/z3-${{ env.Z3_VERSION }}-x64-win.zip'
+          7z x z3-${{ env.Z3_VERSION }}-x64-win.zip
+          "Z3_ARTIFACTS_ROOT=${PWD}\z3-${{ env.Z3_VERSION }}-x64-win" >> $env:GITHUB_ENV
       - name: Download llvm-project
-        shell: cmd
+        shell: pwsh
         run: |
           curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz
           7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz -so | 7z x -aoa -si -ttar
       - name: Build llvm+clang+lld+polly
-        shell: cmd
-        # we have to use clang-cl beacause the component `libcxx` cannot be compiled with msvc-cl
-        # LLVM_ENABLE_LIBXML2 is set to OFF, reason: https://bugzilla.mozilla.org/show_bug.cgi?id=1537669
+        shell: pwsh
         run: |
           pushd .
-          set PATH=%PATH%;${{ env.Z3_ROOT }}\bin
+          $env:PATH += ";${{ Z3_ARTIFACTS_ROOT }}\bin"
           cd llvm-project-${{ env.LLVM_VERSION }}.src
           mkdir build
           cd build
-          echo "LLVM_ARTIFACTS=${{ env.LLVM_ARTIFACTS }}"
           cmake -G "Visual Studio 17 2022" ^
             -A x64 ^
-            -T ClangCL,host=x64 ^
+            -Thost=x64 ^
             -DCMAKE_BUILD_TYPE=Release ^
-            -DCMAKE_INSTALL_PREFIX="${{ env.LLVM_ARTIFACTS }}" ^
-            -DCMAKE_PREFIX_PATH="${{ env.LLVM_ARTIFACTS }}" ^
+            "-DCMAKE_INSTALL_PREFIX=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') ^
+            "-DCMAKE_PREFIX_PATH=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') ^
             -DLLVM_ENABLE_PROJECTS=clang;lld;polly ^
-            -DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx ^
-            -DLLVM_ENABLE_LIBXML2=OFF ^
+            "-DZLIB_ROOT=${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md".Replace('\', '/') ^
+            "-DLibXml2_ROOT=${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md".Replace('\', '/') ^
             -DLLVM_ENABLE_Z3_SOLVER=ON ^
-            -DLLVM_Z3_INSTALL_DIR="${{ env.Z3_ROOT }}" ^
+            "-DLLVM_Z3_INSTALL_DIR=${{ env.Z3_ARTIFACTS_ROOT }}".Replace('\', '/') ^
             ..\llvm
           cmake --build . --config Release --target install
           popd .
+      - name: Copy libz3.dll to artifacts directory
+        shell: pwsh
+        run: |
+          cp '${{ env.Z3_ARTIFACTS_ROOT }}\bin\libz3.dll' '${{ env.LLVM_ARTIFACTS_ROOT }}\bin'
       - name: Pack artifacts
-        shell: cmd
+        shell: pwsh
         # pack artifacts to preserve symbol-links
         run: |
-          tar -czvf llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release.tar.gz ${{ env.LLVM_ARTIFACTS }}
+          pushd .
+          $llvm_artifacts_dirname = Split-Path '${{ env.LLVM_ARTIFACTS_ROOT }}' -Parent
+          $llvm_artifacts_basename = Split-Path '${{ env.LLVM_ARTIFACTS_ROOT }}' -Leaf
+          cd ${llvm_artifacts_dirname}
+          tar -czvf "${llvm_artifacts_basename}.tar.gz" "${llvm_artifacts_basename}"
+          popd
+          mv "${llvm_artifacts_dirname}\${llvm_artifacts_basename}.tar.gz" .\
+          "LLVM_ARTIFACTS_TARBALL=${llvm_artifacts_basename}.tar.gz" >> $env:GITHUB_ENV
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release.tar.gz
-          path: llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release.tar.gz
+          name: ${{ env.LLVM_ARTIFACTS_TARBALL }}
+          path: ${{ env.LLVM_ARTIFACTS_TARBALL }}
