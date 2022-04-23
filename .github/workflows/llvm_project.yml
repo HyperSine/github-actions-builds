@@ -67,6 +67,7 @@ jobs:
             '-DLLVM_ENABLE_PROJECTS=clang;lld;polly' `
             "-DZLIB_ROOT=${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md".Replace('\', '/') `
             "-DLibXml2_ROOT=${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md".Replace('\', '/') `
+            '-DLLVM_ENABLE_LIBXML2=FORCE_ON' `
             '-DLLVM_ENABLE_Z3_SOLVER=ON' `
             "-DLLVM_Z3_INSTALL_DIR=${{ env.Z3_ARTIFACTS_ROOT }}".Replace('\', '/') `
             ..\llvm
