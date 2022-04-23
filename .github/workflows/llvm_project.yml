@@ -44,7 +44,7 @@ jobs:
         shell: pwsh
         run: |
           pushd .
-          $env:PATH += ";${{ Z3_ARTIFACTS_ROOT }}\bin"
+          $env:PATH += ";${{ env.Z3_ARTIFACTS_ROOT }}\bin"
           cd llvm-project-${{ env.LLVM_VERSION }}.src
           mkdir build
           cd build
