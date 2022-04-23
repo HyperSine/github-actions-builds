@@ -40,6 +40,7 @@ jobs:
         run: |
           curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz
           7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz -so | 7z x -aoa -si -ttar
+          ls
       - name: Build llvm+clang+lld+polly
         shell: pwsh
         run: |
