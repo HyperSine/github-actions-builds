@@ -64,13 +64,12 @@ jobs:
             '-DCMAKE_BUILD_TYPE=Release' `
             "-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake".Replace('\', '/') `
             '-DVCPKG_TARGET_TRIPLET=x64-windows-static-md' `
-            "-DCMAKE_PREFIX_PATH=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
+            "-DCMAKE_PREFIX_PATH=${{ env.Z3_ARTIFACTS_ROOT }};${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             "-DCMAKE_INSTALL_PREFIX=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             '-DLLVM_ENABLE_PROJECTS=clang;lld;polly' `
             '-DLLVM_ENABLE_ZLIB=FORCE_ON' `
             '-DLLVM_ENABLE_LIBXML2=FORCE_ON' `
             '-DLLVM_ENABLE_Z3_SOLVER=ON' `
-            "-DLLVM_Z3_INSTALL_DIR=${{ env.Z3_ARTIFACTS_ROOT }}".Replace('\', '/') `
             ..\llvm
           cmake --build . --config Release --target install
           popd
