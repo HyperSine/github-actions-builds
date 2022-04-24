@@ -62,7 +62,7 @@ jobs:
             -A x64 `
             -Thost=x64 `
             '-DCMAKE_BUILD_TYPE=Release' `
-            "-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake".Replace('\', '/') ^
+            "-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake".Replace('\', '/') `
             '-DVCPKG_TARGET_TRIPLET=x64-windows-static-md' `
             "-DCMAKE_PREFIX_PATH=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             "-DCMAKE_INSTALL_PREFIX=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
