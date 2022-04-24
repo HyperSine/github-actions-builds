@@ -1,5 +1,7 @@
 # github-actions-builds
 
+[中文版README](README.zh-CN.md)
+
 [![boost-msvc-static](https://github.com/HyperSine/github-actions-builds/actions/workflows/boost-msvc-static.yml/badge.svg)](https://github.com/HyperSine/github-actions-builds/actions/workflows/boost-msvc-static.yml)
 
 [![lief_sdk-msvc-static](https://github.com/HyperSine/github-actions-builds/actions/workflows/lief_sdk-msvc-static.yml/badge.svg)](https://github.com/HyperSine/github-actions-builds/actions/workflows/lief_sdk-msvc-static.yml)
