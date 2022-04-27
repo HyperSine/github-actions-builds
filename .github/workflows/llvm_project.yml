@@ -2,12 +2,12 @@ name: llvm_project
 on: workflow_dispatch
 
 jobs:
-  llvm_clang_lld_polly-14_0_1-x86_64-msvc-release:
+  llvm_clang_lld_polly-x86_64-msvc-release:
     runs-on: windows-2022
     env:
-      LLVM_VERSION: '14.0.1'
+      LLVM_VERSION: '14.0.2'
       PYTHON_VERSION: '3.10.4'
-      Z3_VERSION: '4.8.15'
+      Z3_VERSION: '4.8.16'
     steps:
       - name: Setup Python
         uses: actions/setup-python@v2
