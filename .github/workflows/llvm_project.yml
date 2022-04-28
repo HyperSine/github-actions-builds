@@ -23,23 +23,23 @@ jobs:
           $llvm_artifacts_root = mkdir llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
           "LLVM_ARTIFACTS_ROOT=${llvm_artifacts_root}" >> $env:GITHUB_ENV
           popd
-      # - name: Install zlib from vcpkg
-      #   shell: pwsh
-      #   run: |
-      #     vcpkg install zlib:x64-windows-static-md
-      # - name: Install libxml2 from vcpkg
-      #   shell: pwsh
-      #   run: |
-      #     vcpkg install libxml2:x64-windows-static-md
-      # - name: Download z3-solver
-      #   shell: pwsh
-      #   run: |
-      #     curl -L -O 'https://github.com/Z3Prover/z3/releases/download/z3-${{ env.Z3_VERSION }}/z3-${{ env.Z3_VERSION }}-x64-win.zip'
+      - name: Install zlib from vcpkg
+        shell: pwsh
+        run: |
+          vcpkg install zlib:x64-windows-static-md
+      - name: Install libxml2 from vcpkg
+        shell: pwsh
+        run: |
+          vcpkg install libxml2:x64-windows-static-md
+      - name: Download z3-solver
+        shell: pwsh
+        run: |
+          curl -L -O 'https://github.com/Z3Prover/z3/releases/download/z3-${{ env.Z3_VERSION }}/z3-${{ env.Z3_VERSION }}-x64-win.zip'
           
-      #     7z x z3-${{ env.Z3_VERSION }}-x64-win.zip
-      #     rm z3-${{ env.Z3_VERSION }}-x64-win.zip
+          7z x z3-${{ env.Z3_VERSION }}-x64-win.zip
+          rm z3-${{ env.Z3_VERSION }}-x64-win.zip
           
-      #     "Z3_ARTIFACTS_ROOT=${PWD}\z3-${{ env.Z3_VERSION }}-x64-win" >> $env:GITHUB_ENV
+          "Z3_ARTIFACTS_ROOT=${PWD}\z3-${{ env.Z3_VERSION }}-x64-win" >> $env:GITHUB_ENV
       - name: Download llvm-project
         shell: pwsh
         run: |
@@ -53,10 +53,8 @@ jobs:
 
           ls
 
-          cd llvm-project-${{ env.LLVM_VERSION }}.src
-          git apply ..\patches\llvm-project\0001-fix-LLVMSupport-z3-link-path.patch
-          cat .\llvm\lib\Support\CMakeLists.txt
-          cd ..
+          git apply --verbose --directory=llvm-project-${{ env.LLVM_VERSION }}.src .\patches\llvm-project\0001-fix-LLVMSupport-z3-link-path.patch
+          cat .\llvm-project-${{ env.LLVM_VERSION }}.src\llvm\lib\Support\CMakeLists.txt
       - name: Build llvm+clang+lld+polly
         shell: pwsh
         run: |
