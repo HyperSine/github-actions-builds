@@ -40,21 +40,12 @@ jobs:
           rm z3-${{ env.Z3_VERSION }}-x64-win.zip
           
           "Z3_ARTIFACTS_ROOT=${PWD}\z3-${{ env.Z3_VERSION }}-x64-win" >> $env:GITHUB_ENV
-      - name: Download llvm-project
+      - name: Clone llvm-project
         shell: pwsh
         run: |
-          curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION }}/llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz
-
-          7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz;
-          rm llvm-project-${{ env.LLVM_VERSION }}.src.tar.xz;
-
-          7z x llvm-project-${{ env.LLVM_VERSION }}.src.tar
-          rm llvm-project-${{ env.LLVM_VERSION }}.src.tar;
-
-          ls
-
-          git apply --verbose --directory=llvm-project-${{ env.LLVM_VERSION }}.src .\patches\llvm-project\0001-fix-LLVMSupport-z3-link-path.patch
-          cat .\llvm-project-${{ env.LLVM_VERSION }}.src\llvm\lib\Support\CMakeLists.txt
+          git clone -b llvmorg-${{ env.LLVM_VERSION }} --depth 1 https://github.com/llvm/llvm-project.git
+          git apply --verbose --directory=llvm-project .\patches\llvm-project\0001-fix-LLVMSupport-z3-link-path.patch
+          cat .\llvm-project\llvm\lib\Support\CMakeLists.txt
       - name: Build llvm+clang+lld+polly
         shell: pwsh
         run: |
