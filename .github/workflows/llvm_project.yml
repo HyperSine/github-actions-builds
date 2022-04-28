@@ -68,10 +68,11 @@ jobs:
             ..\llvm
           cmake --build . --config Release --target install
           popd
-      - name: Copy libz3.dll to artifacts directory
+      - name: Copy libz3 to artifacts directory
         shell: pwsh
         run: |
           cp '${{ env.Z3_ARTIFACTS_ROOT }}\bin\libz3.dll' '${{ env.LLVM_ARTIFACTS_ROOT }}\bin'
+          cp '${{ env.Z3_ARTIFACTS_ROOT }}\bin\libz3.lib' '${{ env.LLVM_ARTIFACTS_ROOT }}\lib'
       - name: Pack artifacts
         shell: pwsh
         # pack artifacts to preserve symbol-links
