@@ -51,7 +51,7 @@ jobs:
         run: |
           pushd .
           $env:PATH += ";${{ env.Z3_ARTIFACTS_ROOT }}\bin"
-          cd llvm-project-${{ env.LLVM_VERSION }}.src
+          cd llvm-project
           mkdir build
           cd build
           cmake -G "Visual Studio 17 2022" `
