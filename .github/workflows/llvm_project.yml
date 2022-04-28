@@ -9,6 +9,8 @@ jobs:
       PYTHON_VERSION: '3.10.4'
       Z3_VERSION: '4.8.16'
     steps:
+      - name: Clone current repo
+        uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -50,6 +52,10 @@ jobs:
           rm llvm-project-${{ env.LLVM_VERSION }}.src.tar;
 
           ls
+
+          cd llvm-project-${{ env.LLVM_VERSION }}.src
+          git apply ..\patches\llvm-project\0001-fix-LLVMSupport-z3-link-path.patch
+          cd ..
       - name: Build llvm+clang+lld+polly
         shell: pwsh
         run: |

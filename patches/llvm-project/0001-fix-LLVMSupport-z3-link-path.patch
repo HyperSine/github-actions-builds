@@ -1,0 +1,21 @@
+diff --git a/llvm/lib/Support/CMakeLists.txt b/llvm/lib/Support/CMakeLists.txt
+index 4d9099554..a3bcae049 100644
+--- a/llvm/lib/Support/CMakeLists.txt
++++ b/llvm/lib/Support/CMakeLists.txt
+@@ -71,7 +71,8 @@ endif()
+ 
+ # Link Z3 if the user wants to build it.
+ if(LLVM_WITH_Z3)
+-  set(system_libs ${system_libs} ${Z3_LIBRARIES})
++  get_filename_component(Z3_LIBRARIES_NAME_WE ${Z3_LIBRARIES} NAME_WE)
++  set(system_libs ${system_libs} ${Z3_LIBRARIES_NAME_WE})
+ endif()
+ 
+ # Override the C runtime allocator on Windows and embed it into LLVM tools & libraries
+@@ -307,4 +308,6 @@ if(LLVM_WITH_Z3)
+     PRIVATE
+     ${Z3_INCLUDE_DIR}
+     )
++  get_filename_component(Z3_LIBRARIES_DIRECTORY ${Z3_LIBRARIES} DIRECTORY)
++  target_link_directories(LLVMSupport PRIVATE ${Z3_LIBRARIES_DIRECTORY})
+ endif()
