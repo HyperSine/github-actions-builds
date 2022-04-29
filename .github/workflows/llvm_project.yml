@@ -60,6 +60,7 @@ jobs:
             "-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake".Replace('\', '/') `
             '-DVCPKG_TARGET_TRIPLET=x64-windows-static-md' `
             "-DCMAKE_EXE_LINKER_FLAGS=/LIBPATH:${{ env.Z3_ARTIFACTS_ROOT }}\bin".Replace('\', '/') `
+            "-DCMAKE_SHARED_LINKER_FLAGS=/LIBPATH:${{ env.Z3_ARTIFACTS_ROOT }}\bin".Replace('\', '/') `
             "-DCMAKE_PREFIX_PATH=${{ env.Z3_ARTIFACTS_ROOT }};${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             "-DCMAKE_INSTALL_PREFIX=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             '-DLLVM_ENABLE_PROJECTS=clang;lld;polly' `
