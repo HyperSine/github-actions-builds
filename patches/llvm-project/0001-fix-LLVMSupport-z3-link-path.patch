@@ -12,10 +12,3 @@ index 4d9099554..a3bcae049 100644
  endif()
  
  # Override the C runtime allocator on Windows and embed it into LLVM tools & libraries
-@@ -307,4 +308,6 @@ if(LLVM_WITH_Z3)
-     PRIVATE
-     ${Z3_INCLUDE_DIR}
-     )
-+  get_filename_component(Z3_LIBRARIES_DIRECTORY ${Z3_LIBRARIES} DIRECTORY)
-+  target_link_directories(LLVMSupport PUBLIC ${Z3_LIBRARIES_DIRECTORY})
- endif()
