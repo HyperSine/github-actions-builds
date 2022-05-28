@@ -5,9 +5,9 @@ jobs:
   llvm_clang_lld_polly-x86_64-msvc-release:
     runs-on: windows-2022
     env:
-      LLVM_VERSION: '14.0.3'
+      LLVM_VERSION: '14.0.4'
       PYTHON_VERSION: '3.10.4'
-      Z3_VERSION: '4.8.16'
+      Z3_VERSION: '4.8.17'
     steps:
       - name: Clone current repo
         uses: actions/checkout@v2
@@ -22,6 +22,13 @@ jobs:
           cd \
           $llvm_artifacts_root = mkdir llvm+clang+lld+polly-${{ env.LLVM_VERSION }}-x86_64-msvc-release
           "LLVM_ARTIFACTS_ROOT=${llvm_artifacts_root}" >> $env:GITHUB_ENV
+          popd
+      - name: Update vcpkg
+        shell: pwsh
+        run: |
+          pushd .
+          cd ${env:VCPKG_INSTALLATION_ROOT}
+          git pull
           popd
       - name: Install zlib from vcpkg
         shell: pwsh
