@@ -1,8 +1,8 @@
-name: lief_sdk-msvc-static
+name: lief_sdk-msvc-shared
 on: workflow_dispatch
 
 jobs:
-  lief_sdk-msvc-static:
+  lief_sdk-msvc-shared:
     strategy:
       matrix:
         arch: [ 'win32', 'x64' ]
@@ -18,7 +18,7 @@ jobs:
         run: |
           pushd .
           cd \
-          $artifacts_root = mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-${{ matrix.arch }}-$('${{ matrix.build_type }}'.ToLower())-$('${{ matrix.msvc_crt }}'.ToLower())
+          $artifacts_root = mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-${{ matrix.arch }}-$('${{ matrix.build_type }}'.ToLower())-$('${{ matrix.msvc_crt }}-shared'.ToLower())
           "ARTIFACTS_DIRNAME=$(Split-Path $artifacts_root -Leaf)" >> $env:GITHUB_ENV
           "ARTIFACTS_FULLPATH=$artifacts_root" >> $env:GITHUB_ENV
           popd
