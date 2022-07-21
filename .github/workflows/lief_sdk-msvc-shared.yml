@@ -1,0 +1,56 @@
+name: lief_sdk-msvc-static
+on: workflow_dispatch
+
+jobs:
+  lief_sdk-msvc-static:
+    strategy:
+      matrix:
+        arch: [ 'win32', 'x64' ]
+        build_type: [ 'Debug', 'Release' ]
+        msvc_crt: [ 'MD', 'MT' ]
+      fail-fast: false
+    runs-on: windows-2022
+    env:
+      LIEF_VERSION: '0.12.1'
+    steps:
+      - name: Create artifacts directory
+        shell: pwsh
+        run: |
+          pushd .
+          cd \
+          $artifacts_root = mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-${{ matrix.arch }}-$('${{ matrix.build_type }}'.ToLower())-$('${{ matrix.msvc_crt }}'.ToLower())
+          "ARTIFACTS_DIRNAME=$(Split-Path $artifacts_root -Leaf)" >> $env:GITHUB_ENV
+          "ARTIFACTS_FULLPATH=$artifacts_root" >> $env:GITHUB_ENV
+          popd
+      - name: Download LIEF source code
+        shell: pwsh
+        run: |
+          curl -L -O https://github.com/lief-project/LIEF/archive/refs/tags/${{ env.LIEF_VERSION }}.tar.gz
+          tar -xvf ${{ env.LIEF_VERSION }}.tar.gz
+          rm ${{ env.LIEF_VERSION }}.tar.gz
+      - name: Build LIEF
+        shell: pwsh
+        run: |
+          pushd .
+          cd LIEF-${{ env.LIEF_VERSION }}
+          mkdir build
+          cd build
+          cmake `
+            -A ${{ matrix.arch }} `
+            -G "Visual Studio 17 2022" `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            -DCMAKE_INSTALL_PREFIX="${{ env.ARTIFACTS_FULLPATH }}" `
+            -DLIEF_EXAMPLES=OFF `
+            -DLIEF_PYTHON_API=OFF `
+            -DLIEF_USE_CRT_"$('${{ matrix.build_type }}'.ToUpper())"=${{ matrix.msvc_crt }}$('${{ matrix.build_type }}'.Equals('Debug') ? 'd' : '') `
+            -DBUILD_SHARED_LIBS=ON `
+            ..
+          cmake --build . --config ${{ matrix.build_type }} --target install
+          cd ..
+          rmdir -Recurse -Force build
+          popd
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACTS_DIRNAME }}
+          path: ${{ env.ARTIFACTS_FULLPATH }}
