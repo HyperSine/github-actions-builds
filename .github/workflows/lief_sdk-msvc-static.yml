@@ -5,7 +5,7 @@ jobs:
   lief_sdk-msvc-static:
     strategy:
       matrix:
-        arch: [ 'x64' ]
+        arch: [ 'win32', 'x64' ]
         build_type: [ 'Debug', 'Release' ]
         msvc_crt: [ 'MD', 'MT' ]
       fail-fast: false
@@ -18,7 +18,7 @@ jobs:
         run: |
           pushd .
           cd \
-          $artifacts_root = mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-${{ matrix.arch }}-$('${{ matrix.build_type }}'.ToLower())-$('${{ matrix.msvc_crt }}'.ToLower())
+          $artifacts_root = mkdir lief_sdk-${{ env.LIEF_VERSION }}-msvc-${{ matrix.arch }}-$('${{ matrix.build_type }}'.ToLower())-$('${{ matrix.msvc_crt }}-static'.ToLower())
           "ARTIFACTS_DIRNAME=$(Split-Path $artifacts_root -Leaf)" >> $env:GITHUB_ENV
           "ARTIFACTS_FULLPATH=$artifacts_root" >> $env:GITHUB_ENV
           popd
