@@ -47,9 +47,9 @@ jobs:
           cp -r ..\include\unicorn "${{ env.ARTIFACTS_FULLPATH }}\include"
 
           mkdir "${{ env.ARTIFACTS_FULLPATH }}\lib"
-          cp ".\$${{ matrix.build_type }}\unicorn.dll" "${{ env.ARTIFACTS_FULLPATH }}\lib"
-          cp ".\$${{ matrix.build_type }}\unicorn-import.exp" "${{ env.ARTIFACTS_FULLPATH }}\lib"
-          cp ".\$${{ matrix.build_type }}\unicorn-import.lib" "${{ env.ARTIFACTS_FULLPATH }}\lib"
+          cp ".\${{ matrix.build_type }}\unicorn.dll" "${{ env.ARTIFACTS_FULLPATH }}\lib"
+          cp ".\${{ matrix.build_type }}\unicorn-import.exp" "${{ env.ARTIFACTS_FULLPATH }}\lib"
+          cp ".\${{ matrix.build_type }}\unicorn-import.lib" "${{ env.ARTIFACTS_FULLPATH }}\lib"
 
           popd
       - name: Upload artifacts
