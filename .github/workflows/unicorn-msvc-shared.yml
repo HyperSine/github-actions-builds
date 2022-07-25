@@ -1,4 +1,4 @@
-name: llvm_project
+name: unicorn-msvc-shared
 on: workflow_dispatch
 
 jobs:
