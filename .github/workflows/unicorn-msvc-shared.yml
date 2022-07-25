@@ -1,0 +1,59 @@
+name: llvm_project
+on: workflow_dispatch
+
+jobs:
+  unicorn-msvc-shared:
+    strategy:
+      matrix:
+        arch: [ 'win32', 'x64' ]
+        build_type: [ 'Debug', 'Release' ]
+        msvc_crt: [ 'MD', 'MT' ]
+      fail-fast: false
+    runs-on: windows-2022
+    env:
+      UNICORN_VERSION: '2.0.0'
+    steps:
+      - name: Create artifacts directory
+        shell: pwsh
+        run: |
+          pushd .
+          cd \
+          $artifacts_root = mkdir unicorn-${{ env.UNICORN_VERSION }}-msvc-${{ matrix.arch }}-$('${{ matrix.build_type }}'.ToLower())-$('${{ matrix.msvc_crt }}-shared'.ToLower())
+          "ARTIFACTS_DIRNAME=$(Split-Path $artifacts_root -Leaf)" >> $env:GITHUB_ENV
+          "ARTIFACTS_FULLPATH=$artifacts_root" >> $env:GITHUB_ENV
+          popd
+      - name: Download unicorn source code
+        shell: pwsh
+        run: |
+          git clone -b ${{ env.UNICORN_VERSION }} --single-branch --depth 1 https://github.com/unicorn-engine/unicorn.git
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1.1
+      - name: Build unicorn
+        shell: pwsh
+        run: |
+          pushd .
+          cd unicorn
+          mkdir build
+          cd build
+          cmake `
+            -A ${{ matrix.arch }} `
+            -G "Visual Studio 17 2022" `
+            -DBUILD_SHARED_LIBS=ON `
+            -DUNICORN_BUILD_TESTS=OFF `
+            ..
+          msbuild unicorn.sln "/p:Plaform=${{ matrix.arch }}" "/p:Configuration=${{ matrix.build_type }}"
+          
+          mkdir "${{ env.ARTIFACTS_FULLPATH }}\include"
+          cp -r ..\include\unicorn "${{ env.ARTIFACTS_FULLPATH }}\include"
+
+          mkdir "${{ env.ARTIFACTS_FULLPATH }}\lib"
+          cp ".\$${{ matrix.build_type }}\unicorn.dll" "${{ env.ARTIFACTS_FULLPATH }}\lib"
+          cp ".\$${{ matrix.build_type }}\unicorn-import.exp" "${{ env.ARTIFACTS_FULLPATH }}\lib"
+          cp ".\$${{ matrix.build_type }}\unicorn-import.lib" "${{ env.ARTIFACTS_FULLPATH }}\lib"
+
+          popd
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACTS_DIRNAME }}
+          path: ${{ env.ARTIFACTS_FULLPATH }}
