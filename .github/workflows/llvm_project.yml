@@ -5,7 +5,7 @@ jobs:
   llvm_clang_lld_polly-x86_64-msvc-release:
     runs-on: windows-2022
     env:
-      LLVM_VERSION: '15.0.0'
+      LLVM_VERSION: '15.0.1'
       PYTHON_VERSION: '3.10.7'
       Z3_VERSION: '4.11.2'
     steps:
