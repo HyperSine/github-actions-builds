@@ -80,17 +80,6 @@ jobs:
             ..\llvm
           cmake --build . --config Release --target install
           popd
-      - name: Copy zlib to artifacts directory
-        shell: pwsh
-        run: |
-          cp ${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md\lib\zlib.lib '${{ env.LLVM_ARTIFACTS_ROOT }}\lib'
-      - name: Copy libxml2 to artifacts directory
-        shell: pwsh
-        run: |
-          cp ${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md\lib\libxml2.lib '${{ env.LLVM_ARTIFACTS_ROOT }}\lib'
-          cp ${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md\lib\charset.lib '${{ env.LLVM_ARTIFACTS_ROOT }}\lib'
-          cp ${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md\lib\iconv.lib '${{ env.LLVM_ARTIFACTS_ROOT }}\lib'
-          cp ${env:VCPKG_INSTALLATION_ROOT}\installed\x64-windows-static-md\lib\lzma.lib '${{ env.LLVM_ARTIFACTS_ROOT }}\lib'
       - name: Copy libz3 to artifacts directory
         shell: pwsh
         run: |
