@@ -30,13 +30,11 @@ jobs:
           cd ${env:VCPKG_INSTALLATION_ROOT}
           git pull
           popd
-      - name: Install zlib from vcpkg
+      - name: Install libffi, zlib, libxml2 from vcpkg
         shell: pwsh
         run: |
+          vcpkg install libffi:x64-windows-static-md
           vcpkg install zlib:x64-windows-static-md
-      - name: Install libxml2 from vcpkg
-        shell: pwsh
-        run: |
           vcpkg install libxml2:x64-windows-static-md
       - name: Download z3-solver
         shell: pwsh
@@ -71,6 +69,11 @@ jobs:
             "-DCMAKE_PREFIX_PATH=${{ env.Z3_ARTIFACTS_ROOT }};${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             "-DCMAKE_INSTALL_PREFIX=${{ env.LLVM_ARTIFACTS_ROOT }}".Replace('\', '/') `
             '-DLLVM_ENABLE_PROJECTS=clang;lld;polly' `
+            '-DLLVM_ENABLE_BINDINGS=OFF' `
+            '-DLLVM_ENABLE_FFI=ON' `
+            '-DFFI_INCLUDE_DIR=${env:VCPKG_INSTALLATION_ROOT}/installed/x64-windows-static-md/include' `
+            '-DFFI_LIBRARY_DIR=${env:VCPKG_INSTALLATION_ROOT}/installed/x64-windows-static-md/lib' `
+            '-DLLVM_ENABLE_RTTI=ON' `
             '-DLLVM_ENABLE_ZLIB=FORCE_ON' `
             '-DLLVM_ENABLE_LIBXML2=FORCE_ON' `
             '-DLLVM_ENABLE_Z3_SOLVER=ON' `
