@@ -5,13 +5,13 @@ jobs:
   boost-msvc-static:
     runs-on: windows-2022
     env:
-      BOOST_VERSION: '1.80.0'
+      BOOST_VERSION: '1.81.0'
       BOOST_TOOLSET: 'msvc-14.3'
     steps:
-      - name: Use Python 3.10.7
+      - name: Use Python 3.10.9
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10.7'
+          python-version: '3.10.9'
       - name: Download boost
         shell: pwsh
         run: |
