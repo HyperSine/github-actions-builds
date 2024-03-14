@@ -1,0 +1,39 @@
+name: qt5-msvc-static
+on: workflow_dispatch
+
+jobs:
+  qt5-base-msvc-static:
+    runs-on: windows-2019
+    env:
+      QT5_VERSION: 'v5.15.13-lts-lgpl'
+    steps:
+      - name: Use Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+      - name: Clone Qt5 source
+        run: |
+          git clone -b ${{ env.QT5_VERSION }} https://code.qt.io/qt/qt5.git qt5
+          cd qt5
+          perl init-repository --module-subset=qtbase
+      - name: Setup VS Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Build Qt5
+        run: |
+          mkdir qt5-build
+          mkdir qt5-artifacts
+          cd qt5-build
+          ..\qt5\configure.bat -debug-and-release -static -static-runtime -no-pch -optimize-size -platform win32-msvc -prefix ..\qt5-artifacts -no-feature-accessibility -opensource -confirm-license -nomake examples -nomake tests
+          nmake
+          nmake install
+      - name: Pack artifacts
+        # use tar pack artifacts in order to preserve potential symbol-links
+        run: |
+          tar -czvf qt5-base-msvc2019-mt-x64.tar.gz qt5-artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: qt5-base-msvc2019-mt-x64.tar.gz
+          path: qt5-base-msvc2019-mt-x64.tar.gz
